@@ -6,7 +6,7 @@ import { need } from '../utils/need';
  * from the Copilot API based on the contents of the token that gets
  * passed to your app in the searchParams.
  */
-export async function getSession(searchParams: SearchParams) {
+export async function getSession(searchParams: URLSearchParams) {
   // apiKey needs to be defined inside the function so we get the
   // error boundary page instead of a vercel error.
   const apiKey = need<string>(

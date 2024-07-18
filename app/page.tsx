@@ -112,7 +112,7 @@ async function Content({ searchParams }: { searchParams: URLSearchParams }) {
   );
 }
 
-export default function Page({ searchParams }: { searchParams: SearchParams }) {
+export default function Page({ searchParams }: { searchParams: URLSearchParams }) {
   return (
     <TokenGate searchParams={searchParams}>
       <Content searchParams={searchParams} />
