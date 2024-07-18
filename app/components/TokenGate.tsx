@@ -1,3 +1,7 @@
+import { copilotApi } from "copilot-node-sdk";
+
+type SearchParams = { [key: string]: string | string[] | undefined };
+
 export function TokenGate({
   children,
   searchParams,
