@@ -5,6 +5,7 @@ import { getSession } from '../utils/session';
 import axios from 'axios';
 import { useRef } from 'react';
 import FileUploadComponent from './internal/page';
+import LogDataButton from './components/LogDataButton';
 
 
 type SearchParams = { [key: string]: string | string[] | undefined };
@@ -19,10 +20,14 @@ async function Content({ searchParams }: { searchParams: SearchParams }) {
   const data = await getSession(searchParams);
   
   console.log({ data });
+
   return (
+    <>
     <main>
         <FileUploadComponent/>
+        <LogDataButton data={data} />
     </main>
+    </>
   );
 }
 
