@@ -191,7 +191,11 @@ import axios from 'axios';
 import { adapticServer } from '../../utils/helpers';
 import UseStore from '../results';
 
-const FileUploadComponent: React.FC<{ data: any }> = ({ data }) => {
+interface PageProps {
+  data: any;
+}
+
+const FileUploadComponent: React.FC<PageProps> = ({ data }) => {
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
