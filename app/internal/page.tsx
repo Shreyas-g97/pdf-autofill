@@ -190,9 +190,10 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { adapticServer } from '../../utils/helpers';
 import UseStore from '../results';
+import { CopilotData } from '../../utils/session'
 
 interface PageProps {
-  data: any;
+  data: CopilotData;
 }
 
 const FileUploadComponent: React.FC<PageProps> = ({ data }) => {

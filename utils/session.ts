@@ -1,14 +1,25 @@
 import { copilotApi } from 'copilot-node-sdk';
 import { need } from '../utils/need';
 
-
-
 type SearchParams = { [key: string]: string | string[] | undefined };
+
 /**
  * A helper function that instantiates the Copilot SDK and fetches data
  * from the Copilot API based on the contents of the token that gets
  * passed to your app in the searchParams.
  */
+type Workspace = Awaited<ReturnType<typeof copilotApi.prototype.retrieveWorkspace>>;
+type Client = Awaited<ReturnType<typeof copilotApi.prototype.retrieveClient>>;
+type Company = Awaited<ReturnType<typeof copilotApi.prototype.retrieveCompany>>;
+type InternalUser = Awaited<ReturnType<typeof copilotApi.prototype.retrieveInternalUser>>;
+
+export type CopilotData = {
+  workspace: Workspace;
+  client?: Client;
+  company?: Company;
+  internalUser?: InternalUser;
+};
+
 export async function getSession(searchParams: SearchParams) {
   // apiKey needs to be defined inside the function so we get the
   // error boundary page instead of a vercel error.
