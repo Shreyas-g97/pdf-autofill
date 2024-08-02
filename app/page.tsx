@@ -24,7 +24,7 @@ async function Content({ searchParams }: { searchParams: SearchParams }) {
   return (
     <>
     <main>
-        <FileUploadComponent/>
+        <FileUploadComponent data={data}/>
         <LogDataButton data={data} />
     </main>
     </>
