@@ -1,13 +1,10 @@
+// session.ts
 import { copilotApi } from 'copilot-node-sdk';
 import { need } from '../utils/need';
 
 type SearchParams = { [key: string]: string | string[] | undefined };
 
-/**
- * A helper function that instantiates the Copilot SDK and fetches data
- * from the Copilot API based on the contents of the token that gets
- * passed to your app in the searchParams.
- */
+// Define types for each entity
 type Workspace = Awaited<ReturnType<typeof copilotApi.prototype.retrieveWorkspace>>;
 type Client = Awaited<ReturnType<typeof copilotApi.prototype.retrieveClient>>;
 type Company = Awaited<ReturnType<typeof copilotApi.prototype.retrieveCompany>>;
@@ -20,9 +17,12 @@ export type CopilotData = {
   internalUser?: InternalUser;
 };
 
-export async function getSession(searchParams: SearchParams) {
-  // apiKey needs to be defined inside the function so we get the
-  // error boundary page instead of a vercel error.
+/**
+ * A helper function that instantiates the Copilot SDK and fetches data
+ * from the Copilot API based on the contents of the token that gets
+ * passed to your app in the searchParams.
+ */
+export async function getSession(searchParams: SearchParams): Promise<CopilotData> {
   const apiKey = need<string>(
     process.env.COPILOT_API_KEY,
     'COPILOT_API_KEY is required, guide available at: https://docs.copilot.com/docs/custom-apps-setting-up-your-first-app#step-2-register-your-app-and-get-an-api-key',
@@ -36,12 +36,7 @@ export async function getSession(searchParams: SearchParams) {
         : undefined,
   });
 
-  const data: {
-    workspace: Awaited<ReturnType<typeof copilot.retrieveWorkspace>>;
-    client?: Awaited<ReturnType<typeof copilot.retrieveClient>>;
-    company?: Awaited<ReturnType<typeof copilot.retrieveCompany>>;
-    internalUser?: Awaited<ReturnType<typeof copilot.retrieveInternalUser>>;
-  } = {
+  const data: CopilotData = {
     workspace: await copilot.retrieveWorkspace(),
   };
   const tokenPayload = await copilot.getTokenPayload?.();
@@ -62,3 +57,4 @@ export async function getSession(searchParams: SearchParams) {
 
   return data;
 }
+
