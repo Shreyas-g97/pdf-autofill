@@ -286,7 +286,6 @@ const FileUploadComponent: React.FC<PageProps> = ({ data }) => {
       }
 
       const targetID = data.client.companyId;
-      // const targetID = '752242a1-11d4-4a13-89b0-c26f02ae4fe3';
       const response = await axios.get(`${adapticServer}api/form-responses`);
       console.log('Form responses:', response.data.data);
       const responseData = response.data.data;
@@ -384,5 +383,6 @@ const FileUploadComponent: React.FC<PageProps> = ({ data }) => {
 };
 
 export default FileUploadComponent;
+
 
 
