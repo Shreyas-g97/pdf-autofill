@@ -67,6 +67,8 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ data }) => {
       "Employee's Address (include ZIP Code)": data["Employee's Address"] || '123 Main St, Anytown, USA 12345',
       "Address is new": "Yes",
       "Employee's Daytime Telephone Number": data["Employee's Daytime Telephone Number"] || '555-123-4567',
+      "Employee's Daytime Telephone Number (first 3 digits)": data["Employee's Daytime Telephone Number"].substring(0,3),
+      "Employee's Daytime Telephone Number (rest)": data["Employee's Daytime Telephone Number"].substring(3).trim(),
       "Patient's Name": data["Patient's Name"] || 'Jane Doe',
       "Patient's Aetna ID Number": "B987654",
       "Patient's Birthdate (MM/DD/YYYY)": data["Patient's Birthdate (MM/DD/YYYY)"] || '02/02/2010',
@@ -137,14 +139,14 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ data }) => {
       "UMP ID Number": "U123456",
       "Patient's Last Name": data["Patient's Name"].split(' ').pop() || 'Doe',
       "Patient's First Name": data["Patient's Name"].split(' ')[0] || 'Jane',
-      "Patient's MI": "A",
+      "Patient's MI": "",
       "Patient's Date of Birth": data["Patient's Birthdate (MM/DD/YYYY)"] || '02/02/2010',
       "Patient's Sex": data["Patient's Sex"] || 'Female',
       "Patient's Relationship to Subscriber": data["Patient's Relationship to Employee"] || 'Child',
       "Daytime Phone Number": data["Employee's Daytime Telephone Number"] || '555-123-4567',
-      "Subscriber's Last Name": data.employeeName?.split(' ').pop() || 'Doe',
-      "Subscriber's First Name": data.employeeName?.split(' ')[0] || 'John',
-      "Subscriber's MI": "B",
+      "Subscriber's Last Name": data["Employee's Name"].split(' ').pop() || 'Doe',
+      "Subscriber's First Name": data["Employee's Name"].split(' ')[0] || 'John',
+      "Subscriber's MI": "",
       "Group Number": data["Policy/Group Number"] || '789101',
       "Medical coverage": data.medicalCoverage || 'Yes',
       "Vision coverage": data.visionCoverage || 'No',
@@ -313,7 +315,7 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ data }) => {
             )}
           </div>
         ) : (
-          <div className="flex flex-col items-center w-1/2 pr-6 border-r">
+          <div className="flex flex-col items-center w-full">
             <input
               type="file"
               accept=".pdf"
@@ -342,6 +344,6 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ data }) => {
       </div>
     </div>
   );
-};
+}  
 
 export default FileUploadComponent;
