@@ -21,6 +21,7 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ data }) => {
   const [formattedData, setFormattedData] = useState<{ [key: string]: string }>({});
   const upload = UseStore.useUploadStore(state => state.upload);
   const setUpload = UseStore.useUploadStore(state => state.setUpload);
+  const [jsonData, setJsonData] = useState<{ [key: string]: any }>({});
 
   const progressMessages = [
     'Analyzing document...',
@@ -53,12 +54,149 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ data }) => {
     }
   };
 
+  const formatDataForBackend = (data: { [key: string]: any }) => {
+    return {
+      "Employer's Name": data["Employer's Name"] || 'ABC Corp',
+      "Policy/Group Number": data["Policy/Group Number"] || '123456',
+      "Employee's Aetna ID Number": data["Employee's ID Number"] || 'A123456',
+      "Employee's Name": data["Employee's Name"] || 'John Doe',
+      "Employee's Birthdate (MM/DD/YYYY)": data["Employee's Birthdate (MM/DD/YYYY)"] || '01/01/1980',
+      "Active": "Yes",
+      "Retired": "No",
+      "Date of Retirement": "",
+      "Employee's Address (include ZIP Code)": data["Employee's Address"] || '123 Main St, Anytown, USA 12345',
+      "Address is new": "Yes",
+      "Employee's Daytime Telephone Number": data["Employee's Daytime Telephone Number"] || '555-123-4567',
+      "Patient's Name": data["Patient's Name"] || 'Jane Doe',
+      "Patient's Aetna ID Number": "B987654",
+      "Patient's Birthdate (MM/DD/YYYY)": data["Patient's Birthdate (MM/DD/YYYY)"] || '02/02/2010',
+      "Patient's Relationship to Employee": data["Patient's Relationship to Employee"] || 'Self',
+      "Patient's Address (if different from employee)": "",
+      "Male": "",
+      "Female": "",
+      "Non-Binary/Other": "Off",
+      "Married": "No",
+      "Single": "Yes",
+      "Is patient employed? No": "Yes",
+      "Is patient employed? Yes": "No",
+      "Name & Address of Employer": "",
+      "Is claim related to an accident? No": data["Is claim related to an accident?"] || 'Yes',
+      "Is claim related to an accident? Yes": "No",
+      "If Yes, date": "",
+      "Time AM": "Off",
+      "Time PM": "Off",
+      "Is claim related to employment? No": data["Is claim related to employment?"] || 'Yes',
+      "Is claim related to employment? Yes": "No",
+      "Country of medical services outside U.S.": "",
+      "Services outside U.S. Emergency care": "Off",
+      "Services outside U.S. Scheduled care": "Off",
+      "Are family members expenses covered by another plan? No": "Yes",
+      "Are family members expenses covered by another plan? Yes": "No",
+      "Other plan details": "",
+      "Member’s ID Number": "",
+      "Member’s Name": "",
+      "Member’s Birthdate (MM/DD/YYYY)": "",
+      "Authorization Signature": "",
+      "Authorization Date": "",
+      "Release of Information Signature": "",
+      "Payment Authorization Signature": "",
+      "Payment Authorization Date": "",
+      "Date of Illness (first symptom) or injury (accident) or pregnancy (LMP)": "",
+      "Date first consulted for this condition": "",
+      "Similar illness or injury dates": "",
+      "Emergency check": "Off",
+      "Date patient able to return to work": "",
+      "Date of total disability from": "",
+      "Date of total disability through": "",
+      "Date of partial disability from": "",
+      "Date of partial disability through": "",
+      "Name of referring physician": "",
+      "Hospitalization dates admitted": "",
+      "Hospitalization dates discharged": "",
+      "Facility name & address": "",
+      "Primary Diagnosis": "",
+      "Secondary Diagnosis": "",
+      "Other Diagnosis": "",
+      "Additional Diagnosis": "",
+      "Procedures, Medical Services, Supplies Furnished Date": "",
+      "Service Place": "",
+      "Procedure Code": "",
+      "Service Description Charges": "",
+      "Service Days or Units": "",
+      "Service Diagnosis Code": "",
+      "Physician's Name & Address": "",
+      "Physician's Telephone Number": "",
+      "Taxpayer identifying number": "",
+      "Patient Account Number": "",
+      "Total charge": "",
+      "Amount paid": "",
+      "Balance due": "",
+      "Physician's Signature": "",
+      "National Provider Identifier": "",
+      "Physician's Date": "",
+      "UMP ID Number": "U123456",
+      "Patient's Last Name": data["Patient's Name"].split(' ').pop() || 'Doe',
+      "Patient's First Name": data["Patient's Name"].split(' ')[0] || 'Jane',
+      "Patient's MI": "A",
+      "Patient's Date of Birth": data["Patient's Birthdate (MM/DD/YYYY)"] || '02/02/2010',
+      "Patient's Sex": data["Patient's Sex"] || 'Female',
+      "Patient's Relationship to Subscriber": data["Patient's Relationship to Employee"] || 'Child',
+      "Daytime Phone Number": data["Employee's Daytime Telephone Number"] || '555-123-4567',
+      "Subscriber's Last Name": data.employeeName?.split(' ').pop() || 'Doe',
+      "Subscriber's First Name": data.employeeName?.split(' ')[0] || 'John',
+      "Subscriber's MI": "B",
+      "Group Number": data["Policy/Group Number"] || '789101',
+      "Medical coverage": data.medicalCoverage || 'Yes',
+      "Vision coverage": data.visionCoverage || 'No',
+      "Dental coverage": data.dentalCoverage || 'Yes',
+      "Prescription coverage": data.prescriptionCoverage || 'Yes',
+      "With Orthodontia": "No",
+      "Coverage type (Group or Individual)": "Group",
+      "Medicare coverage": "No",
+      "Medicare Part A": "Off",
+      "Medicare Part B": "Off",
+      "Medicare Part D": "Off",
+      "Other Group Insurance Plan Name": "",
+      "ID Number": data["Employee's ID Number"] || 'A123456',
+      "Relationship to Subscriber": "Self",
+      "Subscriber's Date of Birth": data["Employee's Birthdate (MM/DD/YYYY)"]  || '01/01/1980',
+      "Address for Submitting Claims": data["Employee's Address"] || '123 Main St, Anytown, USA 12345',
+      "City": "Anytown",
+      "State": "USA",
+      "ZIP Code": "12345",
+      "Coverage for Subscriber": "Yes",
+      "Coverage for Spouse/DP": "No",
+      "Coverage for Child(ren)": "Yes",
+      "Coverage for Family": "Yes",
+      "Name of person with legal custody (if children are covered by more than one plan)": "",
+      "Other group ID numbers": "",
+      "Subscriber's Employer": data["Employer's Name"] || 'ABC Corp',
+      "Effective Date of this Plan": "01/01/2023",
+      "Type of service received (if paid in cash)": "",
+      "Signature Date": "01/01/2024",
+      "Name of illness and injury": "",
+      "Provider's name": "",
+      "If injury, date occurred": "",
+      "If injury, how, when, where": "",
+      "Name of illness and injury 1": "",
+      "Provider's name 1": "",
+      "If injury, date occurred 1": "",
+      "If injury, how, when, where 1": "",
+      "Name of illness and injury 2": "",
+      "Provider's name 2": "",
+      "If injury, date occurred 2": "",
+      "If injury, how, when, where 2": ""
+    };
+  };
+  
+
   const handleFileUpload = async () => {
     if (file) {
       try {
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('formFields', JSON.stringify(formattedData)); // Ensure formattedData is a properly serialized JSON string
+        console.log(jsonData);
+        formData.append('formFields', JSON.stringify(jsonData)); // Include the formatted JSON data
   
         setLoading(true);
         setError(false);
@@ -101,8 +239,9 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ data }) => {
       }
 
       const targetID = data.client?.id || data.client?.companyId;
+      // const targetID = "752242a1-11d4-4a13-89b0-c26f02ae4fe3";
       const response = await axios.get(`${adapticServer}api/form-responses`);
-      console.log('Form responses:', response.data.data);
+      // console.log('Form responses:', response.data.data);
       const responseData = response.data.data;
 
       if (Array.isArray(responseData)) {
@@ -117,13 +256,21 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ data }) => {
               value !== null &&
               'title' in value &&
               'answer' in value &&
-              typeof value.title === 'string' &&
-              typeof value.answer === 'string'
+              typeof value.title === 'string'
             ) {
-              formattedData[value.title] = value.answer;
+               // Check if the answer is an array
+               if (Array.isArray(value.answer) && value.answer.length > 0) {
+                // Take the first element of the array
+                formattedData[value.title] = value.answer[0];
+              } else if (typeof value.answer === 'string') {
+                formattedData[value.title] = value.answer;
+              }
             }
           }
           setFormattedData(formattedData);
+          setJsonData(formatDataForBackend(formattedData));
+          console.log(formattedData);
+          console.log(jsonData);
           setShowUploadSection(true);
           setFormDataError(null); // Clear any previous error
         } else {
