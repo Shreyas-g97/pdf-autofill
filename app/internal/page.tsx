@@ -344,6 +344,6 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ data }) => {
       </div>
     </div>
   );
-  
+}  
 
 export default FileUploadComponent;
