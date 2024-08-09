@@ -315,7 +315,7 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ data }) => {
             )}
           </div>
         ) : (
-          <div className="flex flex-col items-center w-1/2 pr-6 border-r">
+          <div className="flex flex-col items-center w-full">
             <input
               type="file"
               accept=".pdf"
@@ -344,6 +344,6 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ data }) => {
       </div>
     </div>
   );
-};
+  
 
 export default FileUploadComponent;
