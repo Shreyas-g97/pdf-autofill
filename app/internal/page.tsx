@@ -269,11 +269,11 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ data }) => {
       if (!data || !data.client || !data.client.companyId) {
         console.error('Data or client information is missing:', data);
         setFormDataError('Data or client information is missing.');
-        // return;
+        return;
       }
 
-      // const targetID = data.client?.id || data.client?.companyId;
-      const targetID = "752242a1-11d4-4a13-89b0-c26f02ae4fe3";
+      const targetID = data.client?.id || data.client?.companyId;
+      // const targetID = "752242a1-11d4-4a13-89b0-c26f02ae4fe3";
       const response = await axios.get(`${adapticServer}api/form-responses`);
       console.log('Form responses:', response.data.data);
       const responseData = response.data.data;
