@@ -10,6 +10,13 @@ type FileUploadComponentProps = {
   data: { [key: string]: any };
 };
 
+interface Client {
+  email: string;
+  givenName: string;
+  familyName: string;
+  // Add other properties like id, etc.
+}
+
 const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ data }) => {
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
@@ -19,6 +26,8 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ data }) => {
   const [formDataError, setFormDataError] = useState<string | null>(null);
   const [showUploadSection, setShowUploadSection] = useState<boolean>(false);
   const [formattedData, setFormattedData] = useState<{ [key: string]: string }>({});
+  const [availableClients, setAvailableClients] = useState<Client[]>([]); // Array of available clients
+  const [selectedClients, setSelectedClients] = useState<string[]>([]); // Store selected clients
   const upload = UseStore.useUploadStore(state => state.upload);
   const setUpload = UseStore.useUploadStore(state => state.setUpload);
   const [jsonData, setJsonData] = useState<{ [key: string]: any }>({});
@@ -47,10 +56,33 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ data }) => {
     return () => clearInterval(intervalId);
   }, [loading, progressMessages.length]);
 
+  const handleClientSelection = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedOptions = Array.from(event.target.selectedOptions, option => option.value);
+    setSelectedClients(selectedOptions); // Set selected clients
+  };
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files ? event.target.files[0] : null;
     if (uploadedFile) {
       setFile(uploadedFile);
+    }
+  };
+
+  const handleInvite = async () => {
+    if (selectedClients.length === 0) {
+      alert('Please select at least one client.');
+      return;
+    }
+
+    try {
+      const response = await axios.post(`${adapticServer}/api/invite-clients`, {
+        clients: selectedClients
+      });
+      console.log('Invitation successful:', response.data);
+      alert('Invitation sent successfully!');
+    } catch (error) {
+      console.error('Error sending invitations:', error);
+      alert('Error sending invitations.');
     }
   };
 
@@ -237,15 +269,26 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ data }) => {
       if (!data || !data.client || !data.client.companyId) {
         console.error('Data or client information is missing:', data);
         setFormDataError('Data or client information is missing.');
-        return;
+        // return;
       }
 
-      const targetID = data.client?.id || data.client?.companyId;
-      // const targetID = "752242a1-11d4-4a13-89b0-c26f02ae4fe3";
+      // const targetID = data.client?.id || data.client?.companyId;
+      const targetID = "752242a1-11d4-4a13-89b0-c26f02ae4fe3";
       const response = await axios.get(`${adapticServer}api/form-responses`);
-      // console.log('Form responses:', response.data.data);
+      console.log('Form responses:', response.data.data);
       const responseData = response.data.data;
 
+      const fetchClients = async () => {
+        try {
+          const response = await axios.get(`${adapticServer}/api/clients`);
+          console.log(response.data.data);
+          setAvailableClients(response.data.data);
+        } catch (error) {
+          console.error('Error fetching clients:', error);
+        }
+      };
+  
+      fetchClients();
       if (Array.isArray(responseData)) {
         const matchingItem = responseData.find(item => item.clientId === targetID);
   
@@ -300,7 +343,7 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ data }) => {
 
   return (
     <div className="flex flex-col items-center justify-center p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-semibold mb-8 text-center text-blue-600">Upload Medical Claim Form</h1>
+      <h1 className="text-3xl font-semibold mb-8 text-center text-blue-600">Upload Medical Claim Form To File Channel</h1>
       <div className="flex flex-row w-full max-w-4xl bg-white rounded-lg shadow-lg p-6">
         {!showUploadSection ? (
           <div className="flex flex-col items-center w-full">
@@ -339,11 +382,34 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({ data }) => {
             {error && (
               <div className="text-red-500">Something went wrong. Please try again.</div>
             )}
+            {/* New "Invite to Care Team" Section */}
+            <div className="mt-6 w-full">
+              <h2 className="text-2xl font-semibold mb-4">Invite to Care Team</h2>
+              <label htmlFor="clients" className="block mb-2 font-medium">Select Clients to Invite:</label>
+              <select
+                id="clients"
+                multiple
+                className="border border-gray-300 rounded-lg p-2 w-full mb-4"
+                onChange={handleClientSelection}
+              >
+                {availableClients.map(client => (
+                  <option key={client.email} value={client.email}>
+                    {client.email}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={handleInvite}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
+              >
+                Invite
+              </button>
+            </div>
           </div>
         )}
       </div>
     </div>
   );
-}  
+};
 
 export default FileUploadComponent;
